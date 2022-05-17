@@ -9,68 +9,66 @@ GO
 USE bus_station
 GO
 
-CREATE TABLE юбрнцюпю(
-    леярнонкнфемхе CHAR(50) NOT NULL PRIMARY KEY
+CREATE TABLE BUS_STATION(
+    LOCATION VARCHAR(100) NOT NULL PRIMARY KEY
 );
-CREATE TABLE йюяхепх(
-    мнлеп CHAR(10) NOT NULL PRIMARY KEY ,
-    рекетнм CHAR(10), CHECK ( рекетнм LIKE '[0][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ),
-    хле CHAR(50)
+CREATE TABLE CASHIERS(
+    WORK_NUMBER INTEGER NOT NULL PRIMARY KEY ,
+    PHONE CHAR(10), CHECK ( PHONE LIKE '[0][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ),
+    NAME VARCHAR(50)
 );
-CREATE TABLE йюях(
-    мнлеп_мю_йюяхеп CHAR(10) NOT NULL REFERENCES йюяхепх(мнлеп),
-    леярнонкнфемхе_мю_юбрнцюпю CHAR(50) NOT NULL REFERENCES юбрнцюпю(леярнонкнфемхе),
-    мнлеп_мю_йюяю INTEGER NOT NULL,
-	юцемжхъ CHAR(10) NOT NULL,
-    PRIMARY KEY (мнлеп_мю_йюяхеп, леярнонкнфемхе_мю_юбрнцюпю, мнлеп_мю_йюяю )
-);
-
-CREATE TABLE юбрнасях(
-    юбрнасяем_мнлеп CHAR(10) UNIQUE NOT NULL ,
-    леярнонкнфемхе_мю_юбрнцюпю_рпзцбюме CHAR(50) NOT NULL REFERENCES юбрнцюпю(леярнонкнфемхе),
-    леярнонкнфемхе_мю_юбрнцюпю_опхярхцюме CHAR(50) NOT NULL REFERENCES юбрнцюпю(леярнонкнфемхе),
-    леярю INTEGER CHECK (леярю < 60),
-    дюрю_рпзцбюме DATE ,
-    дюрю_опхярхцюме DATE,
-    вюя_рпзцбюме TIME,
-    вюя_опхярхцюме TIME,
-	юцемжхъ CHAR(10) NOT NULL,
-    PRIMARY KEY(юбрнасяем_мнлеп, леярнонкнфемхе_мю_юбрнцюпю_рпзцбюме, леярнонкнфемхе_мю_юбрнцюпю_опхярхцюме)
+CREATE TABLE PAY_DESKS(
+    CASHIER_NUMBER INTEGER NOT NULL REFERENCES CASHIERS(WORK_NUMBER),
+    STATION_LOCATION VARCHAR(100) NOT NULL REFERENCES BUS_STATION(LOCATION),
+    PAY_DESK_NUMBER INTEGER NOT NULL,
+	AGENCY VARCHAR(50) NOT NULL,
+    PRIMARY KEY (CASHIER_NUMBER, STATION_LOCATION, PAY_DESK_NUMBER)
 );
 
-CREATE TABLE ьнтэнпх(
-    мнлеп CHAR(10) NOT NULL PRIMARY KEY ,
-    рекетнм CHAR(10) CHECK ( рекетнм LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ),
-    хле CHAR(50)
-);
-CREATE  TABLE сопюбкъбю(
-    мнлеп_мю_ьнтэнп CHAR(10) NOT NULL REFERENCES ьнтэнпх(мнлеп),
-    мнлеп_мю_юбрнася CHAR(10) NOT NULL REFERENCES юбрнасях(юбрнасяем_мнлеп),
-    PRIMARY KEY(мнлеп_мю_ьнтэнп,мнлеп_мю_юбрнася)
-);
-CREATE TABLE озрмхжх(
-    рекетнм CHAR(50) NOT NULL PRIMARY KEY,
-	хле CHAR(50) NOT NULL
+CREATE TABLE BUSES(
+    BUS_NUMBER INTEGER UNIQUE NOT NULL ,
+    DEPARTURE_LOCATION VARCHAR(100) NOT NULL REFERENCES BUS_STATION(LOCATION),
+    ARRIVAL_LOCATION VARCHAR(100) NOT NULL REFERENCES BUS_STATION(LOCATION),
+    SEATS INTEGER CHECK (SEATS < 60),
+    DEPARTURE_DATE_AND_HOUR DATETIME DEFAULT GETDATE(),
+    ARRIVAL_DATE__AND_HOUR DATETIME DEFAULT GETDATE(),
+	AGENCY VARCHAR(50) NOT NULL,
+    PRIMARY KEY(BUS_NUMBER, DEPARTURE_LOCATION, ARRIVAL_LOCATION)
 );
 
-CREATE TABLE ахкерх(
-	мнлеп_мю_ахкер CHAR(10) NOT NULL,
-    мнлеп_мю_юбрнася CHAR(10) NOT NULL REFERENCES юбрнасях(юбрнасяем_мнлеп),
-    мнлеп_мю_йюяхеп CHAR(10) NOT NULL REFERENCES йюяхепх(мнлеп),
-    рекетнм_мю_озрмхй CHAR(50) NOT NULL REFERENCES озрмхжх(рекетнм),
-    лъярн INTEGER,
-    дюрю_рпзцбюме DATE,
-    вюя_рпзцбюме TIME,
-    бхд CHAR(1) DEFAULT 'м' CHECK ( бхд in ('м', 'л')),
-	рхо CHAR(1) DEFAULT 'е' CHECK ( рхо in ('е', 'д')),
-	юцемжхъ CHAR(10) NOT NULL,
-    PRIMARY KEY(мнлеп_мю_ахкер,мнлеп_мю_юбрнася,мнлеп_мю_йюяхеп,рекетнм_мю_озрмхй)
+CREATE TABLE DRIVERS(
+    DRIVER_NUMBER INTEGER NOT NULL PRIMARY KEY ,
+    PHONE CHAR(10) CHECK ( PHONE LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ),
+    NAME VARCHAR(50) NOT NULL
 );
-CREATE TABLE пюгохяюмхъ(
-    дюрю DATE PRIMARY KEY,
-	леярнонкнфемхе_мю_юбрнцюпю CHAR(50) NOT NULL REFERENCES юбрнцюпю(леярнонкнфемхе),
-    яохязй_гюлхмюбюых CHAR(4) CHECK ( яохязй_гюлхмюбюых in ('ХЛЮ', 'МЪЛЮ')),
-    яохязй_опхярхцюых CHAR(4) CHECK ( яохязй_опхярхцюых  in ('ХЛЮ', 'МЪЛЮ'))
+CREATE TABLE DRIVE(
+    DRIVER_NUMBER INTEGER NOT NULL REFERENCES DRIVERS(DRIVER_NUMBER),
+    BUS_NUMBER INTEGER NOT NULL REFERENCES BUSES(BUS_NUMBER),
+    PRIMARY KEY(DRIVER_NUMBER,BUS_NUMBER)
+);
+CREATE TABLE PASSENGERS(
+    PHONE CHAR(10) CHECK ( PHONE LIKE '0[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' ) PRIMARY KEY,
+	NAME VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE TICKETS(
+	TICKET_NUMBER CHAR(10) NOT NULL,
+    BUS_NUMBER INTEGER NOT NULL REFERENCES BUSES(BUS_NUMBER),
+    CASIER_NUMBER INTEGER NOT NULL REFERENCES CASHIERS(WORK_NUMBER),
+    PASSENGER_PHONE CHAR(10) NOT NULL REFERENCES PASSENGERS(PHONE),
+	DEPARTURE_LOCATION VARCHAR(100),
+    SEAT INTEGER,
+    DEPARTURE_DATE_AND_HOUR DATETIME DEFAULT GETDATE(),
+    SORT CHAR(1) DEFAULT 'N' CHECK ( SORT in ('N', 'R')),
+	TYPE CHAR(1) DEFAULT 'O' CHECK ( TYPE in ('O', 'T')),
+	юцемжхъ CHAR(10) NOT NULL,
+    PRIMARY KEY(TICKET_NUMBER,BUS_NUMBER,CASIER_NUMBER,PASSENGER_PHONE)
+);
+CREATE TABLE SCHEDULE(
+    DATE DATE PRIMARY KEY,
+	STATION_LOCATION VARCHAR(100) NOT NULL REFERENCES BUS_STATION(LOCATION),
+    DEPARTURE_LIST VARCHAR(3) CHECK ( DEPARTURE_LIST in ('yes', 'no')),
+    ARRIVAL_LIST VARCHAR(3) CHECK ( ARRIVAL_LIST  in ('yes', 'no'))
 );
 
 
