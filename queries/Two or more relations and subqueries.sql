@@ -28,12 +28,11 @@ where pd.STATION_LOCATION = bs.CITY
 	and pd.AGENCY = 'Юнион - Ивкони ООД'
 	and pd.PAY_DESK_NUMBER >= 5
 
--- 4. Заявка, която извежда номер на билет, който е с нечетно място, от тип 'Т' и е към фирма за пътуване 'Експрес Снежанка ООД'
-select ticket.TICKET_NUMBER
-from TICKETS ticket
-where ticket.AGENCY = 'Експрес Снежанка ООД'
-	and ticket.SEAT % 2 = 1
-	and ticket.TYPE = 'T'
+-- 4. Заявка, която извежда дестинация на пристигане на автобус, който е към фирмата 'Юнион - Ивкони ООД'
+select distinct bus.ARRIVAL_LOCATION
+from BUSES bus, TICKETS ticket
+where bus.ARRIVAL_LOCATION = ticket.ARRIVAL_LOCATION
+and ticket.AGENCY = 'Юнион - Ивкони ООД'
 
 -- 5. Заявка, която извежда информация за разписанието на автобуси, които потеглят след датата '2022-05-10'
 select bus.BUS_NUMBER, bus.DEPARTURE_LOCATION, bus.ARRIVAL_LOCATION,
